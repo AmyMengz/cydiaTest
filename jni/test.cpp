@@ -50,17 +50,20 @@ bool fake_dvmLoadNativeCode(char* soPath, void* classLoader, char** detail)
 //}
 
 
-int (*old__system_property_get)(const char *name, char *value);
-int new__system_property_get(const char *name, char *value)
+File (*old__system_property_get)(const char *name, char *value);
+File new__system_property_get(const char *name, char *value)
 {
 	LOGD("new__system_property_read  name:%s, value:%s",name,value);
-	if(strstr(name,"ro.serialno")) return strlen(strcpy(value,"AABBCC"));
-	else if(strstr(name,"ro.product.model")) return strlen(strcpy(value,"2014814"));
+	if(strstr(name,"ro.serialno")) return strlen(strcpy(value,"201415486"));
+	else if(strstr(name,"ro.product.model")) return strlen(strcpy(value,"M2"));
 	else return old__system_property_get(name,value);
 
 //    int result=old__system_property_get(name,value);
 //    return result;
 }
+
+int (*old_flopen)(const char *filename, const char *modes);
+int
 //³ÌÐòÈë¿Ú
 MSInitialize
 {
@@ -71,6 +74,12 @@ MSInitialize
         if(hook__system_property_read) MSHookFunction(hook__system_property_read,(void*)&new__system_property_get,(void **)&old__system_property_get);
         else LOGD("hook dvmLoadNativeCode NULL.");//LOGE("error find __system_property_read ");
     }
+    if (image != NULL)
+        {
+            void *hook_flopen=MSFindSymbol(image,"fopen");
+            if(hook_flopen) MSHookFunction(hook_flopen,(void*)&new__system_property_get,(void **)&old__system_property_get);
+            else LOGD("hook dvmLoadNativeCode NULL.");//LOGE("error find __system_property_read ");
+        }
 }
 
 

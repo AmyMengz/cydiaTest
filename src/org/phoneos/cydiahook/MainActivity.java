@@ -6,6 +6,7 @@ import org.phoneos.cydiahook.R;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -17,13 +18,16 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 	private static final String TAG = "cydiahook.MainActivity";
 	public static boolean isManualTrigger = false;
-	
+	SharedPreferences preferences ;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		preferences = MyApplication.getContextObj().getSharedPreferences("test", 0);
+		preferences.edit().putString("imei", "568752587578524").commit();
+	
 		updateSDMountedStatus();
+		Main.setResult("568752587578524");
 		
 		Button btnMountSd = (Button)this.findViewById(R.id.button1);
 		btnMountSd.setOnClickListener(new OnClickListener() {
