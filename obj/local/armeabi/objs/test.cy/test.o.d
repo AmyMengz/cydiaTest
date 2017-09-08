@@ -53,7 +53,8 @@ F:/Work/GIT/cydia-android-hook//obj/local/armeabi/objs/test.cy/test.o: \
  D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/linux/stat.h \
  D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/endian.h \
  D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/sys/endian.h \
- D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/machine/endian.h
+ D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/machine/endian.h \
+ D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/sys/system_properties.h
 
 D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/jni.h:
 
@@ -162,3 +163,5 @@ D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/endian.h:
 D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/sys/endian.h:
 
 D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/machine/endian.h:
+
+D:/ProgramFilesStudioSdk/NDK/platforms/android-3/arch-arm/usr/include/sys/system_properties.h:

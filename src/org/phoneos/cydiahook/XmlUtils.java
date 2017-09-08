@@ -1,24 +1,24 @@
 package org.phoneos.cydiahook;
 
 import java.util.*;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+//import org.dom4j.DocumentException;
+//import org.dom4j.DocumentHelper;
+//import org.dom4j.Element;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class XmlUtils {
 	
-	     
-	    /**
+	  /*   
+	    *//**
 	    * 根据Map组装xml消息体，值对象仅支持基本数据类型、String、BigInteger、BigDecimal，以及包含元素为上述支持数据类型的Map
 	    * 
 	    * @param vo
 	    * @param rootElement
 	    * @return
 	    * @author 蔡政滦 modify by 2015-6-5
-	    */
+	    *//*
 	    public static String map2xmlBody(Map<String, Object> vo, String rootElement) {
 	        Document doc = DocumentHelper.createDocument();
 	        Element body = DocumentHelper.createElement(rootElement);
@@ -58,7 +58,7 @@ public class XmlUtils {
 	        }
 	    }
 	     
-	    /**
+	    *//**
 	     * 根据xml消息体转化为Map
 	     * 
 	     * @param xml
@@ -66,7 +66,7 @@ public class XmlUtils {
 	     * @return
 	     * @throws DocumentException
 	     * @author 蔡政滦 modify by 2015-6-5
-	     */
+	     *//*
 	    public static Map xmlBody2map(String xml, String rootElement) throws DocumentException {
 	        org.dom3j.Document doc = DocumentHelper.parseText(xml);
 	        Element body = (Element) doc.selectSingleNode("/" + rootElement);
@@ -113,7 +113,7 @@ public class XmlUtils {
 	            }
 	        }
 	        return vo;
-	    }
+	    }*/
 	     
 	}
 

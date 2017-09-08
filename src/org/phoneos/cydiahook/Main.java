@@ -22,15 +22,11 @@ public class Main {
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println(e);
-			return "111111111111111";
+			return "869381021542042";
 		}
 	}
-	
-
-	static void initialize() {
-		
-//		MS.
-	
+	static void initialize() {		
+//		MS.	
 		MS.hookClassLoad("android.os.Environment", new MS.ClassLoadHook() {
 
 			@Override

@@ -14,7 +14,7 @@ import android.os.Environment;
 import android.util.Log;
 
 public class XSharedPreferences {
-	private static final String TAG = "ReadOnlySharedPreferences";
+	/*private static final String TAG = "ReadOnlySharedPreferences";
 	private final File mFile;
 	private boolean mLoaded = false;
 	public XSharedPreferences(String packageName, String prefFileName) {
@@ -78,5 +78,5 @@ public class XSharedPreferences {
 			mMap = new HashMap<String, Object>();
 		}
 		notifyAll();
-	}
+	}*/
 }
