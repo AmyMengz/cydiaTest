@@ -82,19 +82,27 @@ int new__system_property_get(const char *name, char *value) {
 	if (strstr(name, "ro.serialno")||strstr(name,"ro.boot.serialno"))
 		return strlen(strcpy(value, "fo5mh091"));
 	else if (strstr(name, "ro.product.model"))
-		return strlen(strcpy(value, "GRA-UL10"));
+		return strlen(strcpy(value, "CAZ-AL10"));
 	else if (strstr(name, "ro.ril.oem.imei"))
-		return strlen(strcpy(value, "869381021542042"));
+		return strlen(strcpy(value, "863531037180387"));
 	else if (strstr(name, "persist.radio.imei"))
-		return strlen(strcpy(value, "869381021542042"));
+		return strlen(strcpy(value, "863531037180387"));
 	else if (strstr(name, "ro.product.brand"))
 		return strlen(strcpy(value, "HUAWEI"));
 	else if (strstr(name, "gsm.version.baseband"))
-			return strlen(strcpy(value, "HUAWEI"));
-	else if (strstr(name, "ro.product.brand"))
-			return strlen(strcpy(value, "HUAWEI"));
-	else if (strstr(name, "ro.product.brand"))
-			return strlen(strcpy(value, "HUAWEI"));
+			return strlen(strcpy(value, "DM_BASE_13A_8803G_W13.44 | 2014012009233"));
+	else if (strstr(name, "ro.build.id"))
+			return strlen(strcpy(value, "KTU84P"));
+	else if (strstr(name, "ro.build.display.id"))
+			return strlen(strcpy(value, "KTU84P"));
+	else if (strstr(name, "ro.build.fingerprint"))
+				return strlen(strcpy(value, "HUAWEI/HUAWEI/CAZ-AL10:4.4.4/KTU84P/MRA58K:user/release-keys"));
+	else if (strstr(name, "ro.build.version.release"))
+				return strlen(strcpy(value, "4.4.4"));
+	else if (strstr(name, "ro.product.manufacturer"))
+				return strlen(strcpy(value, "HUAWEI"));
+
+
 	else
 		return old__system_property_get(name, value);
 }
