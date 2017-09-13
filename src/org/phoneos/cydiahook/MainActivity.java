@@ -27,7 +27,6 @@ public class MainActivity extends Activity {
 		preferences.edit().putString("imei", "568752587578524").commit();
 	
 		updateSDMountedStatus();
-		Main.setResult("568752587578524");
 		
 		Button btnMountSd = (Button)this.findViewById(R.id.button1);
 		btnMountSd.setOnClickListener(new OnClickListener() {
