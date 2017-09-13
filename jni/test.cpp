@@ -17,7 +17,8 @@
 #define BUFLEN 1024
 //MSConfig(MSFilterLibrary, "libdvm.so");
 MSConfig(MSFilterLibrary, "libc.so");
-int GetPropValue(const char* name,char *value);
+int GetPropValue(const char* name, char *value);
+bool SetPropResultValue(char *value, const char* format, ...);
 static char AppName[256] = { 0 };
 char* GetAppName() {
 	FILE *fp = NULL;
@@ -38,7 +39,7 @@ char* GetAppName() {
 	}
 	return AppName;
 }
-bool GetCatValue(char *key,char *value) {
+bool GetCatValue(char *key, char *value) {
 
 	using namespace tinyxml2;
 	XMLDocument *doc = new XMLDocument();
@@ -53,8 +54,8 @@ bool GetCatValue(char *key,char *value) {
 				if (strstr(key, attr)) {
 					const char *r = ele->GetText();
 					result = r;
-					strcpy(value,result);
-					LOGD("GetCatValue value:%s", value);
+					strcpy(value, result);
+					LOGD("GetCatValue key:%s,value:%s", key, value);
 					break;
 				}
 				ele = ele->NextSiblingElement();
@@ -69,152 +70,38 @@ bool GetCatValue(char *key,char *value) {
 	}
 	delete doc;
 	return true;
-
+}
+bool SetPropResultValue(char *value, const char* format, ...) {
+	va_list ap;
+	int n=0,size=1000;
+	va_start(ap, format);
+	n = vsnprintf(value,size,format,ap);
+	va_end(ap);
+	LOGI("79:value::%s format:%s ", value, format);
+	return true;
 }
 int (*old__system_property_get)(const char *name, char *value);
 int new__system_property_get(const char *name, char *value) {
 	GetAppName();
-//	static char v[256] = {0};
-//	GetCatValue("imei",v);
-//	LOGD("GetCatValue vvvvvvvvvvvvvvvvvvvv:%s", v);
+	int result = old__system_property_get(name, value);
 	if (AppName != NULL
 			&& ((strstr(AppName, "com.example.hellojni"))
 					|| (strstr(AppName, "com.donson.leplay.store2")))) {
-		LOGD("new__system_property_get name1:%s, value1:%s, ===========-------------pacname:%s,,v::,%s", name, value, AppName,v);
+		LOGD("new__system_property_get name1:%s, value1:%s, ===========-------------pacname:%s,,", name, value, AppName);
+
+		//LOGI("system_property_get Call:%s|%s|%d",name,value,result);
+//		int PropResult = GetPropValue(name, value);
+//		if (PropResult > 0)
+//			result = PropResult;
+//		return result;
 	}
-//	if (strstr(name, "ro.serialno") || strstr(name, "ro.boot.serialno"))
-//		return strlen(strcpy(value, "f7eb685597"));
-////	else if (strstr(name, "ro.product.model"))
-////		return strlen(strcpy(value, "CAZ-AL10"));
-//	else if (strstr(name, "ro.ril.oem.imei"))
-//		return strlen(strcpy(value, "863531037180387"));
-//	else if (strstr(name, "ro.ril.miui.imei0"))
-//		return strlen(strcpy(value, "863531037180387"));
-//	else if (strstr(name, "persist.radio.imei"))
-//		return strlen(strcpy(value, "863531037180387"));
-//	else if (strstr(name, "ro.product.brand"))
-//		return strlen(strcpy(value, "Xiaomi"));
-////	else if (strstr(name, "gsm.version.baseband"))
-////		return strlen(strcpy(value, "DM_BASE_13A_8803G_W13.44 | 2014012009233"));
-////	else if (strstr(name, "ro.build.id"))
-////		return strlen(strcpy(value, "JRO03L"));
-//	else if (strstr(name, "ro.build.display.id"))
-//		return strlen(strcpy(value, "JRO03L"));
-//	else if (strstr(name, "ro.build.fingerprint"))
-//		return strlen(
-//				strcpy(value,
-//						"Xiaomi/aries/aries:4.1.1/JRO03L/JLB50.0:user/release-keys"));
-//	else if (strstr(name, "ro.build.version.release"))
-//		return strlen(strcpy(value, "4.1.1"));
-//	else if (strstr(name, "ro.product.manufacturer"))
-//		return strlen(strcpy(value, "Xiaomi"));
-//	else if (strstr(name, "gsm.version.ril-impl"))
-//		return strlen(strcpy(value, "android huawei-ril for XiaoMi 1.1"));
-////	else if (strstr(name, "net.hostname"))
-////		return strlen(strcpy(value, "CAZ-AL10-huaweishouji"));
-////	else if (strstr(name, "ro.build.host"))
-////		return strlen(strcpy(value, "compiler02301"));
-//	else if (strstr(name, "ro.super.version"))
-//		return strlen(strcpy(value, "1"));
-//	else if (strstr(name, "persist.service.bdroid.bdaddr"))
-//		return strlen(strcpy(value, "f8:a4:5f:6f:7:55"));
-//	else if (strstr(name, "ro.product.model"))
-//		return strlen(strcpy(value, "MI 2S"));
-//	else if (strstr(name, "ro.product.name"))
-//		return strlen(strcpy(value, "aries"));
-//	else if (strstr(name, "ro.hardware"))
-//		return strlen(strcpy(value, "qcom"));
-//	else if (strstr(name, "ro.product.board"))
-//		return strlen(strcpy(value, "MSM8960"));
-//	else if (strstr(name, "ro.build.custom.display.id"))
-//		return strlen(strcpy(value, "JRO03L"));
-//	else if (strstr(name, "ro.product.device"))
-//		return strlen(strcpy(value, "MI 2S"));
-//	else if (strstr(name, "ro.build.description"))
-//		return strlen(
-//				strcpy(value, "aries-user 4.1.1 JRO03L JLB50.0 release-keys"));
-//	else if (strstr(name, "ro.mediatek.version.release"))
-//		return strlen(strcpy(value, "JRO03L"));
-//	else if (strstr(name, "ro.build.product"))
-//		return strlen(strcpy(value, "MI 2S"));
-//	else if (strstr(name, "ro.build.internal.display.id"))
-//		return strlen(strcpy(value, "MI 2S"));
-//	else if (strstr(name, "persist.radio.cfu.iccid.0"))
-//		return strlen(strcpy(value, "89860018311491128742"));
-//	else if (strstr(name, "ril.iccid.sim1"))
-//		return strlen(strcpy(value, "89860018311491128742"));
-//	else if (strstr(name, "persist.radio.imei"))
-//		return strlen(strcpy(value, "863583875569890"));
-//	else if (strstr(name, "ro.ril.oem.imei"))
-//		return strlen(strcpy(value, "863583875569890"));
-//	else if (strstr(name, "ro.ril.oem.sno"))
-//		return strlen(strcpy(value, "161524924149"));
-//	else if (strstr(name, "ro.ril.oem.meid"))
-//		return strlen(strcpy(value, "863583875569890"));
-//	else if (strstr(name, "persist.radio.meid"))
-//		return strlen(strcpy(value, "863583875569890"));
-//	else if (strstr(name, "gsm.sim.state"))
-//		return strlen(strcpy(value, "READY"));
-//	else if (strstr(name, "gsm.operator.alpha"))
-//		return strlen(strcpy(value, "46000"));
-//	else if (strstr(name, "gsm.sim.operator.alpha"))
-//		return strlen(strcpy(value, "ÖÐ¹úÒÆ¶¯"));
-//	else if (strstr(name, "gsm.operator.numeric"))
-//		return strlen(strcpy(value, "46000"));
-//	else if (strstr(name, "permanent.radio.modem"))
-//		return strlen(strcpy(value, "WCDMA"));
-//	else if (strstr(name, "persist.radio.modem"))
-//		return strlen(strcpy(value, "WCDMA"));
-//	else if (strstr(name, "ro.build.host"))
-//		return strlen(strcpy(value, "MI 2S"));
-//	else if (strstr(name, "ro.ril.miui.imei"))
-//		return strlen(strcpy(value, "863583875569890"));
-//	else if (strstr(name, "ro.runtime.firstboot"))
-//		return strlen(strcpy(value, "1505117502"));
-//	else if (strstr(name, "persist.sys.xtrainject.time"))
-//		return strlen(strcpy(value, "1498791319"));
-//	else if (strstr(name, "ro.build.date.utc"))
-//		return strlen(strcpy(value, "1498791319"));
-//	else if (strstr(name, "ro.product.cuptsm"))
-//		return strlen(strcpy(value, "XiaoMi|ESE|02|01"));
-//	else if (strstr(name, "gsm.version.ril-impl"))
-//		return strlen(strcpy(value, "android XiaoMi-ril for XiaoMi 1.1"));
-//	else if (strstr(name, "rild.libpath"))
-//		return strlen(strcpy(value, "/system/lib/libril-Xiaomi-sprd.so"));
-//	else if (strstr(name, "persist.sys.NV_PROFILE_MODEL"))
-//		return strlen(strcpy(value, "MI 2S"));
-//	else if (strstr(name, "persist.service.bdroid.bdaddr"))
-//		return strlen(strcpy(value, "18:60:88:7d:48:51"));
-//	else if (strstr(name, "persist.sys.klo.rec_start"))
-//		return strlen(strcpy(value, "1505117502"));
-//	else if (strstr(name, "net.hostname"))
-//		return strlen(strcpy(value, "MI 2s-Android"));
-//	else if (strstr(name, "ril.timediff"))
-//		return strlen(strcpy(value, "17:46:46"));
-//	else if (strstr(name, "gsm.version.baseband"))
-//		return strlen(strcpy(value, "M9615A-CEFWMAZM-2.0.128017"));
-//	else if (strstr(name, "ro.build.version.sdk"))
-//		return strlen(strcpy(value, "16"));
-//	else if (strstr(name, "ro.build.id"))
-//		return strlen(strcpy(value, "JRO03L"));
-////	else if (strstr(name,"dhcp.wlan0.dns1") || strstr(name,"dhcp.wlan0.gateway") || strstr(name,"dhcp.wlan0.server") || strstr(name,"net.dns1"))
-////				return strlen(strcpy(value, ""));
-////	else if (strstr(name, ""))
-////				return strlen(strcpy(value, ""));
-//	else if (strstr(name, "persist.sys.NV_DISPXRES"))
-//		return strlen(strcpy(value, "720"));
-//	else if (strstr(name, "persist.sys.NV_DISPYRES"))
-//		return strlen(strcpy(value, "1280"));
-	int result=old__system_property_get(name,value);
-	    //LOGI("system_property_get Call:%s|%s|%d",name,value,result);
-	    int PropResult=GetPropValue(name,value);
-	    if(PropResult>0) result=PropResult;
-	    return result;
-//	else
-//		return old__system_property_get(name, value);
+
+	//LOGI("system_property_get Call:%s|%s|%d",name,value,result);
+	int PropResult = GetPropValue(name, value);
+	if (PropResult > 0)
+		result = PropResult;
+	return result;
 }
-//FILE *fopen(const char *filename, const char *modes)
-//int (*old_flopen)(const char *filename, const char *modes);
 int (*old_fopen)(const char* path, const char* mode);
 int new_fopen(const char* path, const char* mode) {
 
@@ -234,8 +121,6 @@ int new_fopen(const char* path, const char* mode) {
 int (*old_open)(const char* path, int flag);
 int new_open(const char* path, int flag) {
 
-//	unsigned lr;
-//	GETLR(lr);
 	if (AppName != NULL
 			&& ((strstr(AppName, "com.example.hellojni"))
 					|| (strstr(AppName, "com.donson.leplay.store2")))) {
@@ -338,80 +223,143 @@ MSInitialize
 	void *sock = MSFindSymbol(image, "socket");
 	MSHookFunction(sock, (void*) &newsocket, (void **) &oldsocket);
 }
-int GetPropValue(const char* name,char *value)
-{
-    if(!name) return -1;
-    bool bGet=false;
-    LOGD("");
+char brand[100] = {};
+bool isBrand = false;
+char model[100]={};
+bool isModel = false;
+int GetPropValue(const char* name, char *value) {
+	if (!name)
+		return -1;
+	bool bGet = false;
+//	LOGD("");
+	if(!isBrand){
+		isBrand = true;
+		GetCatValue("brand",brand);
+		LOGI("38:%s ", brand);
+	}
+	if(isModel){
+		isModel = true;
+		GetCatValue("model",model);
+	}
+
 //    if(!NeedHook()) return -1;
 //    if(strstr(name,"ro.super.version")) bGet=SetPropResultValue(value,SUPERVERSION);
-    if(strstr(name,"ro.product.model")) bGet=GetCatValue("model",value);
-    else if(strstr(name,"ro.serialno")) bGet=GetCatValue("serial",value);
-    else if(strstr(name,"ro.boot.serialno")) bGet=GetCatValue("serial",value);
-        //else if(strstr(name,"ro.board.platform")) bGet=GetCatValue("brand",value);
-    else if(strstr(name,"ro.build.version.release")) bGet=GetCatValue("version",value);
-    else if(strstr(name,"ro.product.manufacturer")) bGet=GetCatValue("manufacturer",value);
-    else if(strstr(name,"ro.product.name")) bGet=GetCatValue("product",value);
-    else if(strstr(name,"ro.hardware")) bGet=GetCatValue("model",value);
-    else if(strstr(name,"ro.product.board")) bGet=GetCatValue("board",value);
-    else if(strstr(name,"ro.product.brand")) bGet=GetCatValue("brand",value);
-    else if(strstr(name,"ro.build.custom.display.id")) bGet=GetCatValue("model",value);
-    else if(strstr(name,"ro.build.display.id")) bGet=GetCatValue("id",value);
-    else if(strstr(name,"ro.product.device")) bGet=GetCatValue("device",value);
-    else if(strstr(name,"ro.build.fingerprint")) bGet=GetCatValue("fingerprint",value);
-    else if(strstr(name,"ro.build.description")) bGet=GetCatValue("description",value);
-    else if(strstr(name,"ro.mediatek.version.release")) bGet=GetCatValue("display",value);
-    else if(strstr(name,"ro.build.product")) bGet=GetCatValue("model",value);
-    else if(strstr(name,"ro.build.internal.display.id")) bGet=GetCatValue("model",value);
+	if (strstr(name, "ro.product.model"))
+		bGet = GetCatValue("model", value);
+	else if (strstr(name, "ro.serialno"))
+		bGet = GetCatValue("serial", value);
+	else if (strstr(name, "ro.boot.serialno"))
+		bGet = GetCatValue("serial", value);
+////	else if (strstr(name, "ro.board.platform"))
+//	//	bGet = GetCatValue("brand", value);
+	else if (strstr(name, "ro.build.version.release"))
+		bGet = GetCatValue("version", value);
+	else if (strstr(name, "ro.product.manufacturer"))
+		bGet = GetCatValue("manufacturer", value);
 
-    else if(strstr(name,"persist.radio.cfu.iccid.0")) bGet=GetCatValue("simserial",value);
-    else if(strstr(name,"ril.iccid.sim1")) bGet=GetCatValue("simserial",value);
-    else if(strstr(name,"persist.radio.imei")) bGet=GetCatValue("imei",value);
-    else if(strstr(name,"ro.ril.oem.imei")) bGet=GetCatValue("imei",value);
+	else if (strstr(name, "ro.product.name"))
+		bGet = GetCatValue("product", value);
+	else if (strstr(name, "ro.hardware"))
+		bGet = GetCatValue("model", value);
+	else if (strstr(name, "ro.product.board"))
+		bGet = GetCatValue("board", value);
+	else if (strstr(name, "ro.product.brand"))
+		bGet = GetCatValue("brand", value);
 
-    else if(strstr(name,"ro.ril.oem.sno")) bGet=GetCatValue("sno",value);
-    else if(strstr(name,"ro.ril.oem.meid")) bGet=GetCatValue("meid",value);
-    else if(strstr(name,"persist.radio.meid")) bGet=GetCatValue("meid",value);
-//    else if(strstr(name,"gsm.sim.state")) bGet=SetPropResultValue(value,"READY");
-    else if(strstr(name,"gsm.operator.alpha")) bGet=GetCatValue("simoperator",value);
-    else if(strstr(name,"gsm.sim.operator.alpha")) bGet=GetCatValue("networkoperatorname",value);
-    else if(strstr(name,"gsm.operator.numeric")) bGet=GetCatValue("simoperator",value);
-    else if(strstr(name,"permanent.radio.modem")) bGet=GetCatValue("radiomodem",value);
-//    else if(strstr(name,"persist.radio.modem")) bGet=SetPropResultValue(value,"TD");
-    else if(strstr(name,"ro.build.host")) bGet=GetCatValue("model",value);
-    else if(strstr(name,"ro.ril.miui.imei")) bGet=GetCatValue("imei",value);
-    else if(strstr(name,"ro.runtime.firstboot")) bGet=GetCatValue("firstboot",value);
-    else if(strstr(name,"persist.sys.xtrainject.time")) bGet=GetCatValue("buildtime",value);
-//    else if(strstr(name,"ro.ckis")) bGet=SetPropResultValue(value,"OK!");
-    else if(strstr(name,"ro.ckis.model")) bGet=GetCatValue("model",value);
-    else if(strstr(name,"ro.ckis.apilevel")) bGet=GetCatValue("apilevel",value);
-    else if(strstr(name,"ro.build.date.utc")) bGet=GetCatValue("buildtime",value);
-//    else if(strstr(name,"ro.product.cuptsm")) bGet=SetPropResultValue(value,"%s|ESE|02|01",brand);
-//    else if(strstr(name,"gsm.version.ril-impl")) bGet=SetPropResultValue(value,"android %s-ril for %s 1.1",brand,brand);
-//    else if(strstr(name,"rild.libpath")) bGet=SetPropResultValue(value,"/system/lib/libril-%s-sprd.so",brand);
-//    else if(strstr(name,"persist.sys.NV_PROFILE_MODEL")) bGet=SetPropResultValue(value,model);
-    else if(strstr(name,"persist.service.bdroid.bdaddr")) bGet=GetCatValue("bluemac",value);
-    else if(strstr(name,"persist.sys.klo.rec_start")) bGet=GetCatValue("firstboot",value);
+	else if (strstr(name, "ro.build.custom.display.id"))
+		bGet = GetCatValue("model", value);
+	else if (strstr(name, "ro.build.display.id"))
+		bGet = GetCatValue("id", value);
+	else if (strstr(name, "ro.product.device"))
+		bGet = GetCatValue("device", value);
+	else if (strstr(name, "ro.build.fingerprint"))
+		bGet = GetCatValue("fingerprint", value);
+	else if (strstr(name, "ro.build.description"))
+		bGet = GetCatValue("description", value);
+	else if (strstr(name, "ro.mediatek.version.release"))
+		bGet = GetCatValue("display", value);
+	else if (strstr(name, "ro.build.product"))
+		bGet = GetCatValue("model", value);
+	else if (strstr(name, "ro.build.internal.display.id"))
+		bGet = GetCatValue("model", value);
 
-//    else if(strstr(name,"net.hostname")) bGet=SetPropResultValue(value,"%s-Android",model);
-    else if(strstr(name,"ril.timediff")) bGet=GetCatValue("timediff",value);
-    else if(strstr(name,"gsm.version.baseband")) bGet=GetCatValue("radioversion",value);
-    else if(strstr(name,"ro.build.version.sdk")) bGet=GetCatValue("apilevel",value);
-    else if(strstr(name,"ro.build.id")) bGet=GetCatValue("id",value);
-//    else if(strstr(name,"dhcp.wlan0.dns1") || strstr(name,"dhcp.wlan0.gateway") || strstr(name,"dhcp.wlan0.server") || strstr(name,"net.dns1"))
+	else if (strstr(name, "persist.radio.cfu.iccid.0"))
+		bGet = GetCatValue("simserial", value);
+	else if (strstr(name, "ril.iccid.sim1"))
+		bGet = GetCatValue("simserial", value);
+	else if (strstr(name, "persist.radio.imei"))
+		bGet = GetCatValue("imei", value);
+	else if (strstr(name, "ro.ril.oem.imei"))
+		bGet = GetCatValue("imei", value);
+
+	else if (strstr(name, "ro.ril.oem.sno"))
+		bGet = GetCatValue("sno", value);
+	else if (strstr(name, "ro.ril.oem.meid"))
+		bGet = GetCatValue("meid", value);
+	else if (strstr(name, "persist.radio.meid"))
+		bGet = GetCatValue("meid", value);
+    else if(strstr(name,"gsm.sim.state")) bGet=SetPropResultValue(value,"READY");
+	else if (strstr(name, "gsm.operator.alpha"))
+		bGet = GetCatValue("simoperator", value);
+	else if (strstr(name, "gsm.sim.operator.alpha"))
+		bGet = GetCatValue("networkoperatorname", value);
+	else if (strstr(name, "gsm.operator.numeric"))
+		bGet = GetCatValue("simoperator", value);
+	else if (strstr(name, "permanent.radio.modem"))
+		bGet = GetCatValue("radiomodem", value);
+    else if(strstr(name,"persist.radio.modem")) bGet=SetPropResultValue(value,"TD");
+	else if (strstr(name, "ro.build.host"))
+		bGet = GetCatValue("model", value);
+	else if (strstr(name, "ro.ril.miui.imei"))
+		bGet = GetCatValue("imei", value);
+	else if (strstr(name, "ro.runtime.firstboot"))
+		bGet = GetCatValue("firstboot", value);
+	else if (strstr(name, "persist.sys.xtrainject.time"))
+		bGet = GetCatValue("buildtime", value);
+    else if(strstr(name,"ro.ckis")) bGet=SetPropResultValue(value,"OK!");
+	else if (strstr(name, "ro.ckis.model"))
+		bGet = GetCatValue("model", value);
+	else if (strstr(name, "ro.ckis.apilevel"))
+		bGet = GetCatValue("apilevel", value);
+	else if (strstr(name, "ro.build.date.utc"))
+		bGet = GetCatValue("buildtime", value);
+    else if(strstr(name,"ro.product.cuptsm")) bGet=SetPropResultValue(value,"%s|ESE|02|01",brand);
+    else if(strstr(name,"gsm.version.ril-impl")) bGet=SetPropResultValue(value,"android %s-ril for %s 1.1",brand,brand);
+    else if(strstr(name,"rild.libpath")) bGet=SetPropResultValue(value,"/system/lib/libril-%s-sprd.so",brand);
+    else if(strstr(name,"persist.sys.NV_PROFILE_MODEL")) bGet=SetPropResultValue(value,model);
+	else if (strstr(name, "persist.service.bdroid.bdaddr"))
+		bGet = GetCatValue("bluemac", value);
+	else if (strstr(name, "persist.sys.klo.rec_start"))
+		bGet = GetCatValue("firstboot", value);
+
+    else if(strstr(name,"net.hostname")) bGet=SetPropResultValue(value,"%s-Android",model);
+	else if (strstr(name, "ril.timediff"))
+		bGet = GetCatValue("timediff", value);
+	else if (strstr(name, "gsm.version.baseband"))
+		bGet = GetCatValue("radioversion", value);
+	else if (strstr(name, "ro.build.version.sdk"))
+		bGet = GetCatValue("apilevel", value);
+	else if (strstr(name, "ro.build.id"))
+		bGet = GetCatValue("id", value);
+    else if(strstr(name,"dhcp.wlan0.dns1") || strstr(name,"dhcp.wlan0.gateway") || strstr(name,"dhcp.wlan0.server") || strstr(name,"net.dns1"))
 //        bGet=SetPropResultValue(value,"192.168.%d.%d",GetRand(nSeed^0x1111,0,254),GetRand(nSeed^0x2222,1,254));
-//    else if(strstr(name,"dhcp.wlan0.ipaddress")) bGet=SetPropResultValue(value,"192.168.%d.%d",GetRand(nSeed^0x3333,0,254),GetRand(nSeed^0x4444,1,254));
-//    else if(strstr(name,"dhcp.wlan0.dns2") || strstr(name,"net.dns2")) bGet=SetPropResultValue(value,"192.168.%d.%d",GetRand(nSeed^0x5555,0,254),GetRand(nSeed^0x6666,1,254));
-    else if(strstr(name,"persist.sys.NV_DISPXRES")) bGet=GetCatValue("swidth",value);
-    else if(strstr(name,"persist.sys.NV_DISPYRES")) bGet=GetCatValue("sheight",value);
+    	bGet = GetCatValue("dns",value);
+    else if(strstr(name,"dhcp.wlan0.ipaddress"))
+    	bGet = GetCatValue("innerip",value);
+//    	bGet=SetPropResultValue(value,"192.168.%d.%d",GetRand(nSeed^0x3333,0,254),GetRand(nSeed^0x4444,1,254));
+    else if(strstr(name,"dhcp.wlan0.dns2") || strstr(name,"net.dns2"))
+//    	bGet=SetPropResultValue(value,"192.168.%d.%d",GetRand(nSeed^0x5555,0,254),GetRand(nSeed^0x6666,1,254));
+    	bGet = GetCatValue("dns",value);
+	else if (strstr(name, "persist.sys.NV_DISPXRES"))
+		bGet = GetCatValue("swidth", value);
+	else if (strstr(name, "persist.sys.NV_DISPYRES"))
+		bGet = GetCatValue("sheight", value);
 
-
-    int result=-1;
-    if(bGet)
-    {
-        result=strlen(value);
-        LOGI("GetPropValue::: Call:%s|%s|%d",name,value,result);
-    }
-    return result;
+	int result = -1;
+	if (bGet) {
+		result = strlen(value);
+		LOGI("GetPropValue::: Call:%s|%s|%d", name, value, result);
+	}
+	return result;
 }
 

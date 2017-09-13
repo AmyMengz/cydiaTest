@@ -6,12 +6,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+//import Xposed.MethodInt;
+//import Xposed.HookMain.AppInfos_XC_MethodHook;
 import android.content.ContentResolver;
 import android.content.SharedPreferences;
 import android.os.Environment;
+//import android.provider.Settings.Secure;
+//import android.provider.Settings.System;
 import android.text.TextUtils;
 
 import com.saurik.substrate.MS;
+
+//import de.robv.android.xposed.XposedHelpers;
 
 public class Main {
 	static String getimei = "12345678912345";
@@ -38,37 +44,9 @@ public class Main {
 		}
 	}
 
+
 	static void initialize() {
-		// MS.
-		// MS.hookClassLoad("android.os.Environment", new MS.ClassLoadHook() {
-		//
-		// @Override
-		// public void classLoaded(Class<?> arg0) {
-		// Method getExternalStorageState;
-		// try {
-		// String packageName = arg0.getPackage().getName();
-		// System.out.println("hook packageName----------->"
-		// + packageName);
-		// getExternalStorageState = arg0.getMethod(
-		// "getExternalStorageState", new Class<?>[0]);
-		// } catch (NoSuchMethodException e) {
-		// getExternalStorageState = null;
-		// }
-		//
-		// if (getExternalStorageState != null) {
-		// final MS.MethodPointer old = new MS.MethodPointer();
-		//
-		// MS.hookMethod(arg0, getExternalStorageState,
-		// new MS.MethodHook() {
-		// @Override
-		// public Object invoked(Object obj,
-		// Object... args) throws Throwable {
-		// return Environment.MEDIA_MOUNTED;
-		// }
-		// }, old);
-		// }
-		// }
-		// });
+		String packageName = getpackageName();
 		MS.hookClassLoad("android.content.res.Resources",
 				new MS.ClassLoadHook() {
 					@SuppressWarnings("unchecked")
@@ -146,6 +124,7 @@ public class Main {
 						} catch (NoSuchMethodException e) {
 							methodGetAndroidId = null;
 						}
+						
 						if (methodGetAndroidId != null) {
 							final MS.MethodPointer old = new MS.MethodPointer();
 							MS.hookMethod(clz, methodGetAndroidId,
@@ -154,6 +133,8 @@ public class Main {
 										public Object invoked(Object obj,
 												Object... args)
 												throws Throwable {
+//											System.out.println("hook result------name----->"+String
+//													.valueOf(args[1])+" result: "+old.invoke(obj, args));
 											if ("android_id".equals(String
 													.valueOf(args[1]))) {
 												return "8a7821698b478522";
@@ -165,6 +146,45 @@ public class Main {
 						}
 					}
 				});
+		MS.hookClassLoad("android.provider.Settings$System",
+				new MS.ClassLoadHook() {
+
+					@SuppressWarnings("unchecked")
+					@Override
+					public void classLoaded(Class<?> clz) {
+						// hook getAndroidId
+						Method methodGetAndroidId;
+						try {
+							methodGetAndroidId = clz.getMethod("getString",
+									ContentResolver.class, String.class);
+						} catch (NoSuchMethodException e) {
+							methodGetAndroidId = null;
+						}
+						
+						if (methodGetAndroidId != null) {
+							final MS.MethodPointer old = new MS.MethodPointer();
+							MS.hookMethod(clz, methodGetAndroidId,
+									new MS.MethodHook() {
+										@Override
+										public Object invoked(Object obj,
+												Object... args)
+												throws Throwable {
+//											System.out.println("hook result------name----->"+String
+//													.valueOf(args[1])+" result: "+old.invoke(obj, args));
+											if ("android_id".equals(String
+													.valueOf(args[1]))) {
+												return "8a7821698b478522";
+											}
+											return old.invoke(obj, args);
+										}
+									}, old);
+
+						}
+					}
+				});
+		System.out.println("hook result----SystemProperties*************************--->"+getpackageName()+"  "+packageName+"  "+("com.example.hellojni".equals(packageName)
+				|| "com.donson.leplay.store2".equals(packageName)
+				||"com.example.getparamtest".equals(packageName)));
 		MS.hookClassLoad("android.os.SystemProperties", new MS.ClassLoadHook() {
 
 			@SuppressWarnings("unchecked")
@@ -187,8 +207,7 @@ public class Main {
 						public Object invoked(Object obj, Object... args)
 								throws Throwable {
 //							if (ishook())
-								System.out
-										.println("hook SystemProperties----------->"
+								System.out.println("hook SystemProperties----------->"
 												+ String.valueOf(args[0])
 												+ "  " + getpackageName());
 							if ("ro.product.brand".equals(String
@@ -208,6 +227,9 @@ public class Main {
 				}
 			}
 		});
+		System.out.println("hook result----android.net.wifi.WifiInfo()*************************--->"+getpackageName()+"  "+packageName+"  "+("com.example.hellojni".equals(packageName)
+				|| "com.donson.leplay.store2".equals(packageName)
+				||"com.example.getparamtest".equals(packageName)));
 		MS.hookClassLoad("android.net.wifi.WifiInfo", new MS.ClassLoadHook() {
 
 			@SuppressWarnings("unchecked")
@@ -231,13 +253,174 @@ public class Main {
 //							if (ishook())
 								System.out.println("hook MAC----------->"
 										+ getpackageName());
-							return "00:21:D3:55:54:55";
+							return "00:21:D3:55:54:56";
 						}
 					}, old);
 				}
 			}
 		});
+		System.out.println("hook result----packageName()*************************--->"+getpackageName()+"  "+packageName+"  "+("com.example.hellojni".equals(packageName)
+				|| "com.donson.leplay.store2".equals(packageName)
+				||"com.example.getparamtest".equals(packageName)));
+
+		if ("com.example.hellojni".equals(packageName)
+						|| "com.donson.leplay.store2".equals(packageName)
+						||"com.example.getparamtest".equals(packageName)) {
+		
+		SystemPutVauleHook("putString",ContentResolver.class, String.class, String.class);
+//		SystemPutVauleHook("putLong",ContentResolver.class, String.class,long.class);
+//		SystemPutVauleHook("putFloat",ContentResolver.class, String.class,float.class);
+		SystemPutVauleHook("putInt",ContentResolver.class, String.class,int.class);
+		
+		SystemgetVauleHook("getString",ContentResolver.class, String.class);
+//		SystemgetVauleHook("getLong",ContentResolver.class, String.class);
+//		SystemgetVauleHook("getFloat",ContentResolver.class, String.class);
+		SystemgetVauleHook("getInt",ContentResolver.class, String.class);
+		SystemgetVauleHook("getInt",ContentResolver.class, String.class,int.class);
+		
+		System.out.println("hook result----getpackageName()---========getpackageName()===getpackageName()=---->"+getpackageName()+"  "+packageName);
+
+		}
 	}
+	private static void SystemgetVauleHook(final String methodName,final Class<?>... parameterTypes) {
+		MS.hookClassLoad("android.provider.Settings$Secure", new MS.ClassLoadHook() {
+			
+			@Override
+			public void classLoaded(Class<?> clz) {
+				Method method;
+				try {
+					method = clz.getMethod(methodName,parameterTypes);
+					System.out.println("hook result----method---========method===method=---->"+method);
+				} catch (NoSuchMethodException e) {
+					System.out.println("hook result----NoSuchMethodException---========method===method=---->"+e);
+					method = null;
+				}
+				if (method != null) {
+					final MS.MethodPointer old = new MS.MethodPointer();
+
+					MS.hookMethod(clz, method, new MS.MethodHook() {
+						@Override
+						public Object invoked(Object arg0, Object... args)
+								throws Throwable {
+//							Object result =  old.invoke(arg0,args);
+//							if (ishook())
+//								System.out.println("hook result----------->"+result+"  methodName:"+methodName);
+								System.out.println("hook result----name----======--->"+String.valueOf(args[1])+"---value---->"+String.valueOf(args[2])+" methodName:"+methodName);
+							return old.invoke(arg0, args);
+						}
+					}, old);
+				}
+				
+			}
+		});
+		MS.hookClassLoad("android.provider.Settings$System", new MS.ClassLoadHook() {
+			
+			@Override
+			public void classLoaded(Class<?> clz) {
+				Method method;
+				try {
+					method = clz.getMethod(methodName,parameterTypes);
+					System.out.println("hook result----method---========method===method=---->"+method);
+				} catch (NoSuchMethodException e) {
+					System.out.println("hook result----NoSuchMethodException---========method===method=---->"+e);
+					method = null;
+				}
+				if (method != null) {
+					final MS.MethodPointer old = new MS.MethodPointer();
+
+					MS.hookMethod(clz, method, new MS.MethodHook() {
+						@Override
+						public Object invoked(Object arg0, Object... args)
+								throws Throwable {
+//							Object result =  old.invoke(arg0,args);
+//							if (ishook())
+//								System.out.println("hook result----------->"+result+"  methodName:"+methodName);
+								System.out.println("hook result----name----======--->"+String.valueOf(args[1])+"---value---->"+String.valueOf(args[2])+" methodName:"+methodName);
+							return old.invoke(arg0, args);
+						}
+					}, old);
+				}
+				
+			}
+		});
+
+	}
+	public static void SystemPutVauleHook(final String methodName,final Class<?>... parameterTypes) {
+		System.out.println("hook result----SystemPutVauleHook---========method===method=---->"+methodName+"  "+parameterTypes);
+		
+		MS.hookClassLoad("android.provider.Settings$Secure", new MS.ClassLoadHook() {
+			
+			@Override
+			public void classLoaded(Class<?> clz) {
+				Method method;
+				try {
+					method = clz.getMethod(methodName,parameterTypes);
+					System.out.println("hook result----method---========method===method=---->"+method);
+
+				} catch (NoSuchMethodException e) {
+					System.out.println("hook result----NoSuchMethodException---========method===method=---->"+e);
+					method = null;
+				}
+				if (method != null) {
+					final MS.MethodPointer old = new MS.MethodPointer();
+
+					MS.hookMethod(clz, method, new MS.MethodHook() {
+						@Override
+						public Object invoked(Object arg0, Object... args)
+								throws Throwable {
+//							boolean result = (Boolean) old.invoke(arg0,args);
+////							if (ishook())
+//								System.out.println("hook result----------->"+result+"  methodName:"+methodName);
+								System.out.println("hook result----name---============---->"+String.valueOf(args[1])+"---value---->"+String.valueOf(args[2])+" methodName:"+methodName);
+							return old.invoke(arg0, args);
+						}
+					}, old);
+				}
+				
+			}
+		});
+		MS.hookClassLoad("android.provider.Settings$System", new MS.ClassLoadHook() {
+			
+			@Override
+			public void classLoaded(Class<?> clz) {
+				Method method;
+				try {
+					method = clz.getMethod(methodName,parameterTypes);
+					System.out.println("hook result----method---========method===method=---->"+method);
+				} catch (NoSuchMethodException e) {
+					System.out.println("hook result----NoSuchMethodException---========method===method=---->"+e);
+					method = null;
+				}
+				if (method != null) {
+					final MS.MethodPointer old = new MS.MethodPointer();
+
+					MS.hookMethod(clz, method, new MS.MethodHook() {
+						@Override
+						public Object invoked(Object arg0, Object... args)
+								throws Throwable {
+//							boolean result = (Boolean) old.invoke(arg0,args);
+////							if (ishook())
+//								System.out.println("hook result----------->"+result+"  methodName:"+methodName);
+								System.out.println("hook result----name---============---->"+String.valueOf(args[1])+"---value---->"+String.valueOf(args[2])+" methodName:"+methodName);
+							return old.invoke(arg0, args);
+						}
+					}, old);
+				}
+				
+			}
+		});		
+	}
+	
+//XposedHelpers.findAndHookMethod(System.class, methodName, new_objects);
+//	XposedHelpers.findAndHookMethod(Secure.class, methodName, new_objects);
+	
+	
+//	SystemVauleHook(MethodInt.PUT_STRING, packageName, MethodInt.SYSTEM_VALUE_PUT_STRING, ContentResolver.class,String.class, String.class);
+//	SystemVauleHook(MethodInt.GET_STRING, packageName, MethodInt.SYSTEM_VALUE_GET_STRING, ContentResolver.class,String.class);
+//	
+//	SystemVauleHook(MethodInt.PUT_INT, packageName, MethodInt.SYSTEM_VALUE_PUT_INT, ContentResolver.class,String.class, int.class);
+//	SystemVauleHook(MethodInt.GET_INT, packageName, MethodInt.SYSTEM_VALUE_GET_INT_2, ContentResolver.class,String.class);
+//	SystemVauleHook(MethodInt.GET_INT, packageName, MethodInt.SYSTEM_VALUE_GET_INT_3, ContentResolver.class,String.class, int.class);
 
 	public static boolean ishook() {
 		String pac = getpackageName();
