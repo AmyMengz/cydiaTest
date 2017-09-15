@@ -1,4 +1,4 @@
-package org.phoneos.cydiahook;
+package org.phoneos.cydiahook.hook;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
+
+import org.phoneos.cydiahook.util.FileUtil;
 
 import android.os.Environment;
 import android.text.TextUtils;
@@ -60,7 +61,51 @@ public class FileSysOptRecordToFile {
 		}).start();
 
 	}
-
+	public static Set<String> getSysStringset(String listenPackage){
+		return getSetString(listenPackage, RECORD_SYSTEM_OPT_PATH,FLAGE_SYS);
+	}
+	public static Set<String> getSetString(String listenPacName,String Filepath,int flag) {
+		Set<String> set = new HashSet<String>();
+		File file = new File(Filepath);
+		FileUtil.checkDir(file.getParentFile());
+		BufferedReader reader = null;
+		if (file.exists()) {
+			try {
+				reader = new BufferedReader(new FileReader(file));
+				String tmp = null;
+				while ((tmp = reader.readLine()) != null) {
+					switch (flag) {
+					case FLAG_FILE:
+						if (FileUtil.isExternalStorageFile(tmp)
+								|| FileUtil.isDataStorageFile(tmp, listenPacName)) {
+							File tmpFile = new File(tmp);
+							if (tmpFile.exists()) {
+								set.add(tmp);
+							}
+						}
+						break;
+					case FLAGE_SYS:
+						set.add(tmp);
+						break;
+					default:
+						break;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (reader != null) {
+						reader.close();
+						reader = null;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return set;
+	}
 	/**
 	 * 
 	 * @param path

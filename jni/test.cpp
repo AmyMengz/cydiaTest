@@ -84,19 +84,22 @@ int (*old__system_property_get)(const char *name, char *value);
 int new__system_property_get(const char *name, char *value) {
 	GetAppName();
 	int result = old__system_property_get(name, value);
-	if (AppName != NULL
-			&& ((strstr(AppName, "com.example.hellojni"))
-					|| (strstr(AppName, "com.donson.leplay.store2")))) {
-		LOGD("new__system_property_get name1:%s, value1:%s, ===========-------------pacname:%s,,", name, value, AppName);
+//	if (AppName != NULL
+//			&& ((strstr(AppName, "com.example.hellojni"))
+//					|| (strstr(AppName, "com.donson.leplay.store2")))) {
+//		LOGD("new__system_property_get name1:%s, value1:%s, ===========-------------pacname:%s,uid,%d", name, value, AppName,getuid());
 
 		//LOGI("system_property_get Call:%s|%s|%d",name,value,result);
 //		int PropResult = GetPropValue(name, value);
 //		if (PropResult > 0)
 //			result = PropResult;
 //		return result;
-	}
+//	}
 
-	//LOGI("system_property_get Call:%s|%s|%d",name,value,result);
+//	if((getuid()<=1000)&&(!strstr(AppName,"getprop"))){
+//		return result;
+//	}
+	LOGI("system_property_get Call:%s|%s|%d",name,value,result);
 	int PropResult = GetPropValue(name, value);
 	if (PropResult > 0)
 		result = PropResult;
@@ -152,34 +155,6 @@ int newsocket(int domain, int type, int protocol) {
 	}
 	return oldsocket(domain, type, protocol);
 }
-char (*old_strcpy)(char *dest, const char *src);
-char new_strcpy(char *dest, const char *src) {
-	if (AppName != NULL
-			&& ((strstr(AppName, "com.example.hellojni"))
-					|| (strstr(AppName, "com.donson.leplay.store2")))) {
-		LOGD("new_strcpy dest!!:%d,,src:%s", dest, src);
-	}
-	return old_strcpy(dest, src);
-}
-void (*old_popen)(const char *command, const char *modes);
-void new_popen(const char *command, const char *modes) {
-	if (AppName != NULL
-			&& ((strstr(AppName, "com.example.hellojni"))
-					|| (strstr(AppName, "com.donson.leplay.store2")))) {
-		LOGD("new_popen dest!!:%d,,src:%s", command, modes);
-	}
-	return old_popen(command, modes);
-}
-char (*old_strstr)(const char *haystack, const char *needle);
-char new_strstr(const char *haystack, const char *needle) {
-	if (AppName != NULL
-			&& ((strstr(AppName, "com.example.hellojni"))
-					|| (strstr(AppName, "com.donson.leplay.store2")))) {
-		LOGD("new_strstr haystack!!:%d,,needle:%s", haystack, needle);
-	}
-	return old_strstr(haystack, needle);
-}
-//int strcmp(const char *s1, const char *s2)
 //³ÌÐòÈë¿Ú
 MSInitialize
 {
@@ -196,7 +171,6 @@ MSInitialize
 					(void **) &old__system_property_get);
 		else
 			LOGD("hook dvmLoadNativeCode NULL.");
-		//LOGE("error find __system_property_read ");
 	}
 
 	if (image != NULL) {
@@ -206,7 +180,6 @@ MSInitialize
 					(void **) &old_fopen);
 		else
 			LOGD("hook dvmLoadNativeCode NULL.");
-		//LOGE("error find __system_property_read ");
 	}
 
 	if (image != NULL) {
@@ -216,12 +189,6 @@ MSInitialize
 		else
 			LOGD("hook dvmLoadNativeCode NULL.");
 	}
-
-	void *connect = MSFindSymbol(image, "connect");
-	MSHookFunction(connect, (void*) &newConnect, (void **) &oldConnect);
-
-	void *sock = MSFindSymbol(image, "socket");
-	MSHookFunction(sock, (void*) &newsocket, (void **) &oldsocket);
 }
 char brand[100] = {};
 bool isBrand = false;
@@ -256,7 +223,6 @@ int GetPropValue(const char* name, char *value) {
 		bGet = GetCatValue("version", value);
 	else if (strstr(name, "ro.product.manufacturer"))
 		bGet = GetCatValue("manufacturer", value);
-
 	else if (strstr(name, "ro.product.name"))
 		bGet = GetCatValue("product", value);
 	else if (strstr(name, "ro.hardware"))
@@ -265,7 +231,6 @@ int GetPropValue(const char* name, char *value) {
 		bGet = GetCatValue("board", value);
 	else if (strstr(name, "ro.product.brand"))
 		bGet = GetCatValue("brand", value);
-
 	else if (strstr(name, "ro.build.custom.display.id"))
 		bGet = GetCatValue("model", value);
 	else if (strstr(name, "ro.build.display.id"))

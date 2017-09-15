@@ -1,17 +1,5 @@
-package org.phoneos.cydiahook;
+package org.phoneos.cydiahook.hook;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.xmlpull.v1.XmlPullParserException;
-
-import android.content.SharedPreferences;
-import android.os.Environment;
-import android.util.Log;
 
 public class XSharedPreferences {
 	/*private static final String TAG = "ReadOnlySharedPreferences";
