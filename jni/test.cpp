@@ -30,7 +30,6 @@ char* GetAppName() {
 	strcat(path, "/proc/");
 	strcat(path, str);
 	strcat(path, "/cmdline");
-
 	fp = fopen(path, "r");
 	if (fp) {
 		memset(AppName, sizeof(AppName), 0);
@@ -40,7 +39,6 @@ char* GetAppName() {
 	return AppName;
 }
 bool GetCatValue(char *key, char *value) {
-
 	using namespace tinyxml2;
 	XMLDocument *doc = new XMLDocument();
 	XMLError err = doc->LoadFile("sdcard/xx/cat.xml");
@@ -107,9 +105,6 @@ int new__system_property_get(const char *name, char *value) {
 }
 int (*old_fopen)(const char* path, const char* mode);
 int new_fopen(const char* path, const char* mode) {
-
-//	unsigned lr;
-//	GETLR(lr);
 	if (AppName != NULL
 			&& ((strstr(AppName, "com.example.hellojni"))
 					|| (strstr(AppName, "com.donson.leplay.store2")))) {
@@ -123,17 +118,36 @@ int new_fopen(const char* path, const char* mode) {
 }
 int (*old_open)(const char* path, int flag);
 int new_open(const char* path, int flag) {
-
 	if (AppName != NULL
 			&& ((strstr(AppName, "com.example.hellojni"))
 					|| (strstr(AppName, "com.donson.leplay.store2")))) {
 		LOGD("open!!:%d,,PATH:%s", getpid(), path);
 	}
 	if (strstr(path, "/sys/class/net/wlan0/address")) {
-		return old_open("/sdcard/xx/file/address", flag);
-	} else {
+		return old_open("/sdcard/xx/mac/wlan0", flag);
+	}else if (strstr(path,"/sys/class/net/dummy0/address")) {
+		return old_open("/sdcard/xx/mac/dummy0", flag);
+	}else if (strstr(path,"/sys/class/net/p2p0/address")) {
+		return old_open("/sdcard/xx/mac/wlan0", flag);
+	}else if (strstr(path,"/sys/class/net/ppp0/address")) {
+
+	}else if (strstr(path,"/sys/class/net/usbnet0/address")) {
+		return old_open("/sdcard/xx/mac/usbnet0", flag);
+	}else if (strstr(path,"/sys/block/mmcblk0/device/cid")) {
+		return old_open("/sdcard/xx/block/cid", flag);
+	}else if (strstr(path,"/sys/block/mmcblk0/device/csd")) {
+		return old_open("/sdcard/xx/block/csd", flag);
+	}else if (strstr(path,"/sys/block/mmcblk0boot0/device/device/cid")) {
+		return old_open("/sdcard/xx/block/cid", flag);
+	}else if (strstr(path,"/sys/block/mmcblk0boot0/device/device/csd")) {
+		return old_open("/sdcard/xx/block/csd", flag);
+	}else if (strstr(path,"/proc/net/if_inet6")) {
+		return old_open("/sdcard/xx/mac/if_inet6", flag);
+	}
+	else {
 		return old_open(path, flag);
 	}
+
 }
 void (*oldConnect)(int, const sockaddr *, socklen_t);
 void newConnect(int socket, const sockaddr *address, socklen_t length) {
@@ -146,19 +160,15 @@ void newConnect(int socket, const sockaddr *address, socklen_t length) {
 }
 int (*oldsocket)(int domain, int type, int protocol);
 int newsocket(int domain, int type, int protocol) {
-
-	if (AppName != NULL
-			&& ((strstr(AppName, "com.example.hellojni"))
+	if (AppName != NULL&& ((strstr(AppName, "com.example.hellojni"))
 					|| (strstr(AppName, "com.donson.leplay.store2")))) {
-		LOGD(
-				"socket domain!!:%d,,type:%d,protocol :%d", domain, type, protocol);
+		LOGD("socket domain!!:%d,,type:%d,protocol :%d", domain, type, protocol);
 	}
 	return oldsocket(domain, type, protocol);
 }
 //³ÌÐòÈë¿Ú
 MSInitialize
 {
-
 	MSImageRef image = MSGetImageByName("/system/lib/libc.so");
 	char * bufferProcess = (char*) calloc(256, sizeof(char));
 
